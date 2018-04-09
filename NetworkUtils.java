@@ -17,7 +17,7 @@ import java.util.Scanner;
 import uby.luca.bakingapp.data.Recipe;
 
 public class NetworkUtils {
-    final static String recipeURL = "https://go.udacity.com/android-baking-app-json";
+    public final static String recipeURL = "https://go.udacity.com/android-baking-app-json";
 
 
     public static URL buildRecipeURL(String recipeURL) {

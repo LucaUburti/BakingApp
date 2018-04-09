@@ -1,4 +1,4 @@
-package uby.luca.bakingapp;
+package uby.luca.bakingapp.loaders;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
@@ -10,11 +10,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import uby.luca.bakingapp.NetworkUtils;
 import uby.luca.bakingapp.data.Recipe;
 
 public class RecipeAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Recipe>> {
-
-
 
     public RecipeAsyncTaskLoader(Context context) {
         super(context);
@@ -26,7 +25,6 @@ public class RecipeAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Recipe>> {
         String jsonResults = null;
         try {
             jsonResults = NetworkUtils.readFromURL(url);
-            Log.d("RecipeAsyncTaskLoader", "loadInBackground: "+jsonResults);
         } catch (IOException e) {
             e.printStackTrace();
         }

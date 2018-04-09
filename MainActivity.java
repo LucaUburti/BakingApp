@@ -1,53 +1,49 @@
 package uby.luca.bakingapp;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import uby.luca.bakingapp.adapters.RecipeAdapter;
 import uby.luca.bakingapp.data.Recipe;
+import uby.luca.bakingapp.loaders.RecipeAsyncTaskLoader;
 
 public class MainActivity extends AppCompatActivity {
-    Context context = this;
+    Context mContext = this;
     int RECIPELOADER_ID = 100;
+    RecipeAdapter recipeAdapter;
+    @BindView(R.id.main_rv)
+    RecyclerView mainRv;
+
+
     private LoaderManager.LoaderCallbacks<ArrayList<Recipe>> recipeLoader = new LoaderManager.LoaderCallbacks<ArrayList<Recipe>>() {
         @Override
         public Loader<ArrayList<Recipe>> onCreateLoader(int id, Bundle args) {
-            return new RecipeAsyncTaskLoader(context);
+            return new RecipeAsyncTaskLoader(mContext);
         }
+
         @Override
         public void onLoadFinished(Loader<ArrayList<Recipe>> loader, ArrayList<Recipe> data) {
             //add to adapter and then set it to the corresponding RecyclerView
-            TextView deleteme = findViewById(R.id.deleteme);
             if (data != null) {
-                for (int i = 0; i < data.size(); i++) {
-                    Recipe recipe = data.get(i);
-                    deleteme.append("\n\n\nricetta numero: " + i);
-                    deleteme.append("\nid: " + recipe.getId());
-                    deleteme.append("\nname: " + recipe.getName());
-                    for (int j = 0; j < recipe.getIngredients().size(); j++) {
-                        Recipe.Ingredient ingredient = recipe.getIngredients().get(j);
-                        deleteme.append("\ning_quantity: " + ingredient.getQuantity());
-                        deleteme.append("\ning_measure: " + ingredient.getMeasure());
-                        deleteme.append("\ning_ingredient: " + ingredient.getIngredient());
-                    }
-                    for (int k = 0; k < recipe.getSteps().size(); k++) {
-                        Recipe.Step step = recipe.getSteps().get(k);
-                        deleteme.append("\nstep_id: " + step.getId());
-                        deleteme.append("\nstep_shortDesc: " + step.getShortDescription());
-                        deleteme.append("\nstep_desc: " + step.getDescription());
-                        deleteme.append("\nstep_video: " + step.getVideoURL());
-                        deleteme.append("\nstep_thumbVideo: " + step.getThumbnailURL());
-                    }
-                    deleteme.append("\nservings: " + recipe.getServings());
-                    deleteme.append("\nimage: " + recipe.getImage());
-                }
+                recipeAdapter.add(data);
+                mainRv.setAdapter(recipeAdapter);
+                Log.d("MainActivity", "recipeAdapter finished loading");
             } else {
-                deleteme.setText("empty!?");
+                Toast.makeText(mContext, R.string.returned_data_is_null, Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -61,8 +57,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
+        ButterKnife.bind(this);
+
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mainRv.setLayoutManager(new GridLayoutManager(this, 1));
+        } else {
+            mainRv.setLayoutManager(new GridLayoutManager(this, 3));
+        }
+        recipeAdapter=new RecipeAdapter(this);
+
+        if (!isOnline()){
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_LONG).show();
+        } else{
+            getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
+        }
+
+    }
 
 
+    private boolean isOnline() {        // from Stack Overflow: https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = null;
+        if (cm != null) {
+            netInfo = cm.getActiveNetworkInfo();
+        }
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
