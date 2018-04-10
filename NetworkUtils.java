@@ -14,6 +14,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import uby.luca.bakingapp.data.Ingredient;
+import uby.luca.bakingapp.data.Step;
 import uby.luca.bakingapp.data.Recipe;
 
 public class NetworkUtils {
@@ -55,58 +57,56 @@ public class NetworkUtils {
     }
 
     public static ArrayList<Recipe> parseRecipeJsonResults(String jsonResults) throws JSONException {
-        ArrayList<Recipe> recipesList=new ArrayList<>();
+        ArrayList<Recipe> recipesList = new ArrayList<>();
 
 
-        JSONArray jsonRecipes=new JSONArray(jsonResults);
+        JSONArray jsonRecipes = new JSONArray(jsonResults);
         for (int i = 0; i < jsonRecipes.length(); i++) {
-            JSONObject jsonCurrentRecipe=jsonRecipes.getJSONObject(i);
-            String id=jsonCurrentRecipe.optString("id");
-            String name=jsonCurrentRecipe.optString("name");
-            String servings=jsonCurrentRecipe.optString("servings");
-            String image=jsonCurrentRecipe.optString("image");
+            JSONObject jsonCurrentRecipe = jsonRecipes.getJSONObject(i);
+            String id = jsonCurrentRecipe.optString("id");
+            String name = jsonCurrentRecipe.optString("name");
+            String servings = jsonCurrentRecipe.optString("servings");
+            String image = jsonCurrentRecipe.optString("image");
 
-            Recipe recipe=new Recipe(id,name,null,null,servings,image); //ingredients and steps will be added after we get an instance of the current recipe
+            JSONArray jsonIngredients = jsonCurrentRecipe.optJSONArray("ingredients");
+            ArrayList<Ingredient> ingredientsList = parseIngredients(jsonIngredients);
 
-            JSONArray jsonIngredients=jsonCurrentRecipe.optJSONArray("ingredients");
-            ArrayList<Recipe.Ingredient> ingredientsList = parseIngredients(jsonIngredients, recipe);
-            recipe.setIngredients(ingredientsList);
+            JSONArray jsonSteps = jsonCurrentRecipe.optJSONArray("steps");
+            ArrayList<Step> stepsList = parseSteps(jsonSteps);
 
-            JSONArray jsonSteps=jsonCurrentRecipe.optJSONArray("steps");
-            ArrayList<Recipe.Step>stepsList=parseSteps(jsonSteps, recipe);
-            recipe.setSteps(stepsList);
+            Recipe recipe = new Recipe(id, name, ingredientsList, stepsList, servings, image);
             recipesList.add(recipe);
         }
         return recipesList;
     }
 
-    public static ArrayList<Recipe.Ingredient> parseIngredients(JSONArray jsonIngredients, Recipe recipe) throws JSONException {
-        ArrayList<Recipe.Ingredient> ingredientsList=new ArrayList<>();
+    public static ArrayList<Ingredient> parseIngredients(JSONArray jsonIngredients) throws JSONException {
+        ArrayList<Ingredient> ingredientsList = new ArrayList<>();
 
         for (int i = 0; i < jsonIngredients.length(); i++) {
-            JSONObject jsonCurrentIngredient=jsonIngredients.getJSONObject(i);
-            String quantity=jsonCurrentIngredient.optString("quantity");
-            String measure=jsonCurrentIngredient.optString("measure");
-            String ingredient=jsonCurrentIngredient.optString("ingredient");
+            JSONObject jsonCurrentIngredient = jsonIngredients.getJSONObject(i);
+            String quantity = jsonCurrentIngredient.optString("quantity");
+            String measure = jsonCurrentIngredient.optString("measure");
+            String ingredient = jsonCurrentIngredient.optString("ingredient");
 
-            Recipe.Ingredient recipeIngredient=recipe.new Ingredient(quantity,measure,ingredient);
+            Ingredient recipeIngredient = new Ingredient(quantity, measure, ingredient);
             ingredientsList.add(recipeIngredient);
         }
         return ingredientsList;
     }
 
-    public static ArrayList<Recipe.Step> parseSteps(JSONArray jsonSteps, Recipe recipe) throws JSONException {
-        ArrayList<Recipe.Step> stepsList=new ArrayList<>();
+    public static ArrayList<Step> parseSteps(JSONArray jsonSteps) throws JSONException {
+        ArrayList<Step> stepsList = new ArrayList<>();
 
         for (int i = 0; i < jsonSteps.length(); i++) {
-            JSONObject jsonCurrentStep=jsonSteps.getJSONObject(i);
-            String id=jsonCurrentStep.optString("id");
-            String shortDescription=jsonCurrentStep.optString("shortDescription");
-            String description=jsonCurrentStep.optString("description");
-            String videoURL=jsonCurrentStep.optString("videoURL");
-            String thumbnailURL=jsonCurrentStep.optString("thumbnailURL");
+            JSONObject jsonCurrentStep = jsonSteps.getJSONObject(i);
+            String id = jsonCurrentStep.optString("id");
+            String shortDescription = jsonCurrentStep.optString("shortDescription");
+            String description = jsonCurrentStep.optString("description");
+            String videoURL = jsonCurrentStep.optString("videoURL");
+            String thumbnailURL = jsonCurrentStep.optString("thumbnailURL");
 
-            Recipe.Step recipeStep=recipe.new Step(id,shortDescription,description,videoURL,thumbnailURL);
+            Step recipeStep = new Step(id, shortDescription, description, videoURL, thumbnailURL);
             stepsList.add(recipeStep);
         }
         return stepsList;

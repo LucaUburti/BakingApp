@@ -17,11 +17,19 @@ import uby.luca.bakingapp.R;
 import uby.luca.bakingapp.data.Recipe;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHolder> {
+    public static final String PARCELED_RECIPE = "parceledRecipe";
+
     private ArrayList<Recipe> recipeList = new ArrayList<>();
     private Context mContext;
+    RecipeOnClickHandler recipeOnClickHandler;
 
-    public RecipeAdapter(Context context) {
+    public RecipeAdapter(Context context, RecipeOnClickHandler recipeOnClickHandler) {
         this.mContext = context;
+        this.recipeOnClickHandler=recipeOnClickHandler;
+    }
+
+    public interface RecipeOnClickHandler {
+        void recipeOnClickImplementation(Recipe clickedRecipe);
     }
 
     public void add(Recipe recipe) {
@@ -75,7 +83,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(mContext, recipeList.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mContext, recipeList.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
+            recipeOnClickHandler.recipeOnClickImplementation(recipeList.get(getAdapterPosition()));
+
         }
     }
 }

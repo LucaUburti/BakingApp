@@ -1,14 +1,18 @@
 package uby.luca.bakingapp.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
-public class Recipe {
+public class Recipe implements Parcelable {
     String id;
     String name;
-    ArrayList <Ingredient> ingredients;
-    ArrayList <Step> steps;
+    ArrayList<Ingredient> ingredients;
+    ArrayList<Step> steps;
     String servings;
     String image;
+
 
     public Recipe(String id, String name, ArrayList<Ingredient> ingredients, ArrayList<Step> steps, String servings, String image) {
         this.id = id;
@@ -18,6 +22,29 @@ public class Recipe {
         this.servings = servings;
         this.image = image;
     }
+
+    private Recipe(Parcel in){
+        id=in.readString();
+        name=in.readString();
+        ingredients=new ArrayList<>();
+        ingredients=in.readArrayList(Ingredient.class.getClassLoader());
+        steps=new ArrayList<>();
+        steps=in.readArrayList(Step.class.getClassLoader());
+        servings=in.readString();
+        image=in.readString();
+    }
+
+    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
+        @Override
+        public Recipe createFromParcel(Parcel in) {
+            return new Recipe(in);
+        }
+
+        @Override
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -67,97 +94,24 @@ public class Recipe {
         this.image = image;
     }
 
-    public class Ingredient{
-        String quantity;
-        String measure;
-        String ingredient;
-
-        public Ingredient(String quantity, String measure, String ingredient) {
-            this.quantity = quantity;
-            this.measure = measure;
-            this.ingredient = ingredient;
-        }
-
-        public String getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(String quantity) {
-            this.quantity = quantity;
-        }
-
-        public String getMeasure() {
-            return measure;
-        }
-
-        public void setMeasure(String measure) {
-            this.measure = measure;
-        }
-
-        public String getIngredient() {
-            return ingredient;
-        }
-
-        public void setIngredient(String ingredient) {
-            this.ingredient = ingredient;
-        }
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public class Step{
-        String id;
-        String shortDescription;
-        String description;
-        String videoURL;
-        String thumbnailURL;
-
-        public Step(String id, String shortDescription, String description, String videoURL, String thumbnailURL) {
-            this.id = id;
-            this.shortDescription = shortDescription;
-            this.description = description;
-            this.videoURL = videoURL;
-            this.thumbnailURL = thumbnailURL;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getShortDescription() {
-            return shortDescription;
-        }
-
-        public void setShortDescription(String shortDescription) {
-            this.shortDescription = shortDescription;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public String getVideoURL() {
-            return videoURL;
-        }
-
-        public void setVideoURL(String videoURL) {
-            this.videoURL = videoURL;
-        }
-
-        public String getThumbnailURL() {
-            return thumbnailURL;
-        }
-
-        public void setThumbnailURL(String thumbnailURL) {
-            this.thumbnailURL = thumbnailURL;
-        }
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeList(ingredients);
+        parcel.writeList(steps);
+        parcel.writeString(servings);
+        parcel.writeString(image);
     }
+
+
+
+
 }
 
 

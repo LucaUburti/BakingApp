@@ -1,6 +1,7 @@
 package uby.luca.bakingapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,7 +22,9 @@ import uby.luca.bakingapp.adapters.RecipeAdapter;
 import uby.luca.bakingapp.data.Recipe;
 import uby.luca.bakingapp.loaders.RecipeAsyncTaskLoader;
 
-public class MainActivity extends AppCompatActivity {
+import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
+
+public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeOnClickHandler {
     Context mContext = this;
     int RECIPELOADER_ID = 100;
     RecipeAdapter recipeAdapter;
@@ -64,11 +67,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mainRv.setLayoutManager(new GridLayoutManager(this, 3));
         }
-        recipeAdapter=new RecipeAdapter(this);
+        recipeAdapter = new RecipeAdapter(this, this);
 
-        if (!isOnline()){
+        if (!isOnline()) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_LONG).show();
-        } else{
+        } else {
             getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
         }
 
@@ -83,5 +86,15 @@ public class MainActivity extends AppCompatActivity {
             netInfo = cm.getActiveNetworkInfo();
         }
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    @Override
+    public void recipeOnClickImplementation(Recipe clickedRecipe) {
+        //Toast.makeText(this, clickedRecipe.getName() + " " + clickedRecipe.getServings(), Toast.LENGTH_SHORT).show();
+        Intent intent=new Intent(this, RecipeDetails.class);
+        Bundle bundle=new Bundle();
+        bundle.putParcelable(PARCELED_RECIPE, clickedRecipe);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }
