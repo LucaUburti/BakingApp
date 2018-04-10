@@ -40,13 +40,28 @@ public class RecipeDetailsFragment extends Fragment {
     RecyclerView stepsRv;
     @BindView(R.id.recipedetails_recipe_iv)
     ImageView recipeIv;
+
     Context mContext = getActivity();
     private StepsAdapter stepsAdapter;
 
+//    OnStepClickListener onStepClickListener;
+//    public interface OnStepClickListener {
+//        void onStepClickImplementation(int stepId);
+//    }
+//
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        try{
+//            onStepClickListener=(OnStepClickListener) context;
+//        } catch (ClassCastException e){
+//            throw new ClassCastException();
+//        }
+//    }
 
     //Recipe recipe;
 
-    public void setRecipe(Recipe recipe) {
+    public void setRecipe(Recipe recipe, StepsAdapter.StepOnClickHandler stepOnClickHandler) {
         //this.recipe = recipe;
         recipeTv.setText(recipe.getName());
         servingsTv.setText(R.string.servings);
@@ -76,7 +91,7 @@ public class RecipeDetailsFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         stepsRv.setLayoutManager(layoutManager);
         //stepsRv.setNestedScrollingEnabled(true);
-        stepsAdapter = new StepsAdapter(recipe.getSteps());
+        stepsAdapter = new StepsAdapter(recipe.getSteps(), stepOnClickHandler);
         stepsRv.setAdapter(stepsAdapter);
 
 
