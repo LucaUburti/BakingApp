@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        Log.d("MainActivity", "Running on tablet? "+getResources().getBoolean(R.bool.isTablet));
+
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mainRv.setLayoutManager(new GridLayoutManager(this, 1));
         } else {
