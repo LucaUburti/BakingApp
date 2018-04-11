@@ -1,14 +1,18 @@
 package uby.luca.bakingapp;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import uby.luca.bakingapp.data.Recipe;
 import uby.luca.bakingapp.data.Step;
@@ -17,9 +21,10 @@ import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
 import static uby.luca.bakingapp.adapters.StepsAdapter.PARCELED_STEP;
 import static uby.luca.bakingapp.adapters.StepsAdapter.STEP_POSITION;
 
-public class StepDetails extends AppCompatActivity {
+public class StepDetails extends AppCompatActivity implements StepDetailsFragment.OnStepNavbarClickListener {
     private Step step;
     private Recipe recipe;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,27 +36,27 @@ public class StepDetails extends AppCompatActivity {
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
-
-        if (savedInstanceState != null) {  //don't recreate fragments after rotation
-            return;
-        }
-
         Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
+        final Bundle bundle = intent.getExtras();
         if (bundle != null) {
             recipe = bundle.getParcelable(PARCELED_RECIPE); //passed the whole recipe to be able to easily navigate to next/previous steps
-            int clickedStepPosition = bundle.getInt(STEP_POSITION);
+            final int clickedStepPosition = bundle.getInt(STEP_POSITION);
             step = recipe.getSteps().get(clickedStepPosition);
-            if (step != null && recipe != null) {
-//                RecipeDetailsFragment recipedetailsFragment=(RecipeDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_recipedetails);
-//                recipedetailsFragment.setRecipe(recipe, this);
-                Toast.makeText(this, "STEP: " + step.getDescription(), Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, R.string.error_step_details, Toast.LENGTH_SHORT).show();
+
+
+            if (savedInstanceState == null) {  //don't recreate fragments after rotation
+                StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
+                stepDetailsFragment.setArguments(bundle);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().add(R.id.step_details_container, stepDetailsFragment).commit();
             }
 
+        } else {
+            Toast.makeText(this, R.string.error_step_details, Toast.LENGTH_SHORT).show();
         }
+
     }
+
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -60,4 +65,14 @@ public class StepDetails extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onStepNavbarClicked(int clickedStep) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(PARCELED_RECIPE, recipe);
+        bundle.putInt(STEP_POSITION, clickedStep);
+        StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
+        stepDetailsFragment.setArguments(bundle);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.step_details_container, stepDetailsFragment).commit();
+    }
 }
