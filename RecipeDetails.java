@@ -1,24 +1,20 @@
 package uby.luca.bakingapp;
 
-import android.app.Fragment;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import uby.luca.bakingapp.adapters.StepsAdapter;
 import uby.luca.bakingapp.data.Recipe;
-import uby.luca.bakingapp.data.Step;
 
 import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
-import static uby.luca.bakingapp.adapters.StepsAdapter.PARCELED_STEP;
 import static uby.luca.bakingapp.adapters.StepsAdapter.STEP_POSITION;
 
-public class RecipeDetails extends AppCompatActivity implements StepsAdapter.StepOnClickHandler {
+public class RecipeDetails extends AppCompatActivity implements StepsAdapter.StepOnClickHandler, StepDetailsFragment.OnStepNavbarClickListener {
     private Recipe recipe;
 
 
@@ -40,6 +36,15 @@ public class RecipeDetails extends AppCompatActivity implements StepsAdapter.Ste
                 RecipeDetailsFragment recipedetailsFragment = (RecipeDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_recipedetails);
                 recipedetailsFragment.setRecipe(recipe, this);
 
+                if (getResources().getBoolean(R.bool.isTablet)) {
+                    if (savedInstanceState == null) {  //don't recreate dynamic fragment after rotation
+                        StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
+                        stepDetailsFragment.setArguments(bundle);
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().add(R.id.step_details_container, stepDetailsFragment).commit();
+                    }
+
+                }
 
             } else {
                 Toast.makeText(this, R.string.error_recipe_details, Toast.LENGTH_SHORT).show();
@@ -49,16 +54,33 @@ public class RecipeDetails extends AppCompatActivity implements StepsAdapter.Ste
     }
 
     @Override
-    public void stepOnClickImplementation(int clickedStepPosition) {
-
-
-        Intent intent = new Intent(this, StepDetails.class);
+    public void stepOnClickImplementation(int clickedStepPosition) { //step clicked
         Bundle bundle = new Bundle();
         bundle.putParcelable(PARCELED_RECIPE, recipe);
         bundle.putInt(STEP_POSITION, clickedStepPosition);
 
-        intent.putExtras(bundle);
-        startActivity(intent);
+        if (getResources().getBoolean(R.bool.isTablet)) {
+            StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
+            stepDetailsFragment.setArguments(bundle);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.step_details_container, stepDetailsFragment).commit();
+        } else {
+            Intent intent = new Intent(this, StepDetails.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
 
+
+    }
+
+    @Override
+    public void onStepNavbarClicked(int clickedStep) {  //prev-next clicked
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(PARCELED_RECIPE, recipe);
+        bundle.putInt(STEP_POSITION, clickedStep);
+        StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
+        stepDetailsFragment.setArguments(bundle);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.step_details_container, stepDetailsFragment).commit();
     }
 }

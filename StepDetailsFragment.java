@@ -3,30 +3,28 @@ package uby.luca.bakingapp;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
@@ -35,7 +33,6 @@ import butterknife.ButterKnife;
 import uby.luca.bakingapp.data.Recipe;
 import uby.luca.bakingapp.data.Step;
 
-import static java.lang.Long.getLong;
 import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
 import static uby.luca.bakingapp.adapters.StepsAdapter.STEP_POSITION;
 
@@ -54,7 +51,7 @@ public class StepDetailsFragment extends Fragment {
     RelativeLayout stepNavbarRl;
 
     SimpleExoPlayer simpleExoPlayer;
-    String PLAYER_POSITION="playerPosition";
+    String PLAYER_POSITION = "playerPosition";
 
     OnStepNavbarClickListener onStepNavbarClickListener;
 
@@ -95,23 +92,18 @@ public class StepDetailsFragment extends Fragment {
 
             setupCorrectLayout(isLandscape, isTablet, !videoURL.isEmpty()); // make player fullscreen if in landscape, on a phone, and has a video
 
-
-            simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), new DefaultTrackSelector(), new DefaultLoadControl());
-            simpleExoPlayerView.setPlayer(simpleExoPlayer);
-
-            if (!videoURL.isEmpty()) {
+            if (!videoURL.isEmpty()) { //we can init the player
+                simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), new DefaultTrackSelector(), new DefaultLoadControl());
+                simpleExoPlayerView.setPlayer(simpleExoPlayer);
                 Uri videoUri = Uri.parse(videoURL);
-                simpleExoPlayerView.setVisibility(View.VISIBLE);
                 String userAgent = Util.getUserAgent(getActivity(), "BackingApp");
                 MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
                 simpleExoPlayer.prepare(mediaSource);
                 simpleExoPlayer.setPlayWhenReady(true);
-                if (savedInstanceState!=null){
-                    long playerPosition=savedInstanceState.getLong(PLAYER_POSITION, simpleExoPlayer.getCurrentPosition());
+                if (savedInstanceState != null) {
+                    long playerPosition = savedInstanceState.getLong(PLAYER_POSITION, simpleExoPlayer.getCurrentPosition());
                     simpleExoPlayer.seekTo(playerPosition);
                 }
-            } else { //no video available, hide player
-                simpleExoPlayerView.setVisibility(View.GONE);
             }
 
 
@@ -119,8 +111,8 @@ public class StepDetailsFragment extends Fragment {
             stepDetailsShortdescTv.setText(step.getShortDescription());
             stepDetailsDescTv.setText(step.getDescription());
 
-
-            if (clickedStepPosition == 0) {
+            //setup bottom Prev and Next navigation buttons
+            if (clickedStepPosition == 0) { //first step
                 prevTv.setVisibility(View.GONE);
             } else {
                 prevTv.setVisibility(View.VISIBLE);
@@ -131,8 +123,7 @@ public class StepDetailsFragment extends Fragment {
                     }
                 });
             }
-
-            if (clickedStepPosition == recipe.getSteps().size() - 1) {
+            if (clickedStepPosition == recipe.getSteps().size() - 1) { //last step
                 nextTv.setVisibility(View.GONE);
             } else {
                 nextTv.setVisibility(View.VISIBLE);
@@ -149,25 +140,43 @@ public class StepDetailsFragment extends Fragment {
     }
 
     private void setupCorrectLayout(boolean isLandscape, boolean isTablet, boolean hasVideo) {
-        if (isLandscape && !isTablet && hasVideo) { //landscape on a phone: display player in full screen
-            stepDetailsShortdescTv.setVisibility(View.GONE);
-            stepDetailsDescTv.setVisibility(View.GONE);
-//            prevTv.setVisibility(View.GONE);
-//            nextTv.setVisibility(View.GONE);
-//            stepNavbarRl.setVisibility(View.GONE);
-            ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
-            if (ab != null) {
-                ab.hide();
-            }
-        } else {    //in all other cases, display the other views normally
-            stepDetailsShortdescTv.setVisibility(View.VISIBLE);
-            stepDetailsDescTv.setVisibility(View.VISIBLE);
-//            prevTv.setVisibility(View.VISIBLE);
-//            nextTv.setVisibility(View.VISIBLE);
-//            stepNavbarRl.setVisibility(View.VISIBLE);
-            ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
-            if (ab != null) {
-                ab.show();
+        if (!hasVideo) {
+            simpleExoPlayerView.setVisibility(View.GONE);//no video available, hide player
+
+        } else {
+            simpleExoPlayerView.setVisibility(View.VISIBLE);
+
+            if (isLandscape && !isTablet) { //landscape on a phone
+                stepDetailsShortdescTv.setVisibility(View.GONE);  //hide unnecessary view
+                stepDetailsDescTv.setVisibility(View.GONE);
+                ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                if (ab != null) {
+                    ab.hide();
+                }
+
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) simpleExoPlayerView.getLayoutParams();
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT; //give the player as much room as possible
+                simpleExoPlayerView.setLayoutParams(params);
+
+
+            } else {    //in all other cases, display the other views normally
+                stepDetailsShortdescTv.setVisibility(View.VISIBLE);
+                stepDetailsDescTv.setVisibility(View.VISIBLE);
+                ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                if (ab != null) {
+                    ab.show();
+                }
+
+                int correctHeightDp; //limit the player size so it's not too bulky
+                if (isLandscape) {
+                    correctHeightDp = 300; //a little more room if in landscape
+                } else {
+                    correctHeightDp = 250; //a little smaller for portrait
+                }
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) simpleExoPlayerView.getLayoutParams();
+                params.height = (int) (correctHeightDp * Resources.getSystem().getDisplayMetrics().density); //https://stackoverflow.com/questions/8295986/how-to-calculate-dp-from-pixels-in-android-programmatically
+                simpleExoPlayerView.setLayoutParams(params);
+
             }
         }
 
@@ -176,7 +185,7 @@ public class StepDetailsFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (simpleExoPlayer!=null) {
+        if (simpleExoPlayer != null) {
             simpleExoPlayer.stop();
             simpleExoPlayer.release();
             simpleExoPlayer = null;
@@ -187,8 +196,8 @@ public class StepDetailsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (simpleExoPlayer!=null){
-            long playerPosition=simpleExoPlayer.getCurrentPosition();
+        if (simpleExoPlayer != null) {
+            long playerPosition = simpleExoPlayer.getCurrentPosition();
             outState.putLong(PLAYER_POSITION, playerPosition);
         }
 

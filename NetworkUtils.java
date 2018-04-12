@@ -1,6 +1,7 @@
 package uby.luca.bakingapp;
 
 import android.net.Uri;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,11 +37,9 @@ public class NetworkUtils {
     public static String readFromURL(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setReadTimeout(10000);
-            urlConnection.setConnectTimeout(15000);
             urlConnection.connect();
             InputStream in = urlConnection.getInputStream();
+
 
             Scanner scanner = new Scanner(in);
             scanner.useDelimiter("\\A");

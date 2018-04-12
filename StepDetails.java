@@ -66,7 +66,7 @@ public class StepDetails extends AppCompatActivity implements StepDetailsFragmen
     }
 
     @Override
-    public void onStepNavbarClicked(int clickedStep) {
+    public void onStepNavbarClicked(int clickedStep) { //prev-next clicked
         Bundle bundle = new Bundle();
         bundle.putParcelable(PARCELED_RECIPE, recipe);
         bundle.putInt(STEP_POSITION, clickedStep);
