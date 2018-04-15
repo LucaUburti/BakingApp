@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">BakingApp</string>
+    <string name="not_connected">You are not connected to the Internet</string>
+    <string name="returned_data_is_null">Error retrieving data. Check Internet connection</string>
+    <string name="error_recipe_details">Error retrieving recipe details</string>
+    <string name="error_step_details">Error retrieving step details</string>
+    <string name="ingredients_list">Ingredients List</string>
+    <string name="servings">Servings: </string>
+    <string name="steps">Steps</string>
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
+    <string name="save_as_favourite">Save as favourite</string>
+    <string name="saving_to_widget">Saving ingredients to Widget</string>
+
+
+</resources>

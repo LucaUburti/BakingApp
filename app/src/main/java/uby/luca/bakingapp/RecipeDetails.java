@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import butterknife.ButterKnife;
@@ -34,12 +36,12 @@ public class RecipeDetails extends AppCompatActivity implements StepsAdapter.Ste
             recipe = bundle.getParcelable(PARCELED_RECIPE);
             if (recipe != null) {
                 RecipeDetailsFragment recipedetailsFragment = (RecipeDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_recipedetails);
-                recipedetailsFragment.setRecipe(recipe, this);
+                recipedetailsFragment.setRecipe(recipe, this);  //set up data for the static fragment
 
                 if (getResources().getBoolean(R.bool.isTablet)) {
                     if (savedInstanceState == null) {  //don't recreate dynamic fragment after rotation
                         StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
-                        stepDetailsFragment.setArguments(bundle);
+                        stepDetailsFragment.setArguments(bundle); //set up data for the dynamic fragment for tablet layout
                         FragmentManager fragmentManager = getSupportFragmentManager();
                         fragmentManager.beginTransaction().add(R.id.step_details_container, stepDetailsFragment).commit();
                     }
@@ -61,12 +63,12 @@ public class RecipeDetails extends AppCompatActivity implements StepsAdapter.Ste
 
         if (getResources().getBoolean(R.bool.isTablet)) {
             StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
-            stepDetailsFragment.setArguments(bundle);
+            stepDetailsFragment.setArguments(bundle); //set up new data for the dynamic fragment for tablet layout
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.step_details_container, stepDetailsFragment).commit();
         } else {
             Intent intent = new Intent(this, StepDetails.class);
-            intent.putExtras(bundle);
+            intent.putExtras(bundle); //set up new data for the step details Activity for non-tablet layout
             startActivity(intent);
         }
 
@@ -82,5 +84,20 @@ public class RecipeDetails extends AppCompatActivity implements StepsAdapter.Ste
         stepDetailsFragment.setArguments(bundle);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.step_details_container, stepDetailsFragment).commit();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.favourite, menu);
+        return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_as_favourite:
+                Toast.makeText(this, R.string.saving_to_widget, Toast.LENGTH_SHORT).show();
+                //update Widget
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
