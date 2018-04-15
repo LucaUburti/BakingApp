@@ -3,10 +3,12 @@ package uby.luca.bakingapp.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 public class Ingredient implements Parcelable {
-    String quantity;
-    String measure;
-    String ingredient;
+    private String quantity;
+    private String measure;
+    private String ingredient;
 
     public Ingredient(String quantity, String measure, String ingredient) {
         this.quantity = quantity;
@@ -66,5 +68,18 @@ public class Ingredient implements Parcelable {
         parcel.writeString(quantity);
         parcel.writeString(measure);
         parcel.writeString(ingredient);
+    }
+
+    public static String formatIngredientsList(Recipe recipe) {
+        StringBuilder formattedIngredients = new StringBuilder();
+        ArrayList<Ingredient> ingredients = recipe.getIngredients();
+        for (int i = 0; i < recipe.getIngredients().size(); i++) {
+            Ingredient currentIngredient = ingredients.get(i);
+            formattedIngredients.append(currentIngredient.getIngredient());
+            if (i < ingredients.size() - 1) {
+                formattedIngredients.append("; ");
+            }
+        }
+        return formattedIngredients.toString();
     }
 }

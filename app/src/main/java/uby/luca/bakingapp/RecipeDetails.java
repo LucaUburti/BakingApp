@@ -1,7 +1,9 @@
 package uby.luca.bakingapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +14,16 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import uby.luca.bakingapp.adapters.StepsAdapter;
 import uby.luca.bakingapp.data.Recipe;
+import uby.luca.bakingapp.widget.UpdateWidgetService;
 
 import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
 import static uby.luca.bakingapp.adapters.StepsAdapter.STEP_POSITION;
+import static uby.luca.bakingapp.data.Ingredient.formatIngredientsList;
 
 public class RecipeDetails extends AppCompatActivity implements StepsAdapter.StepOnClickHandler, StepDetailsFragment.OnStepNavbarClickListener {
     private Recipe recipe;
-
+    public static final String RECIPE_NAME = "recipe_name";
+    public static final String RECIPE_INGREDIENTS = "recipe_ingredients";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +95,19 @@ public class RecipeDetails extends AppCompatActivity implements StepsAdapter.Ste
         getMenuInflater().inflate(R.menu.favourite, menu);
         return true;
     }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_as_favourite:
                 Toast.makeText(this, R.string.saving_to_widget, Toast.LENGTH_SHORT).show();
-                //update Widget
+
+                UpdateWidgetService.startActionUpdateIngredientsWidgets(this, recipe);//update widget with recipe
+
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this); //store favourite recipe name and ingredients on sharedprefs
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(RECIPE_NAME, recipe.getName());
+                editor.putString(RECIPE_INGREDIENTS, formatIngredientsList(recipe)); //storing only minimal info for simplicity
+                editor.apply();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
