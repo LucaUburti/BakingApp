@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,10 @@ import uby.luca.bakingapp.loaders.RecipeAsyncTaskLoader;
 import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
 
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeOnClickHandler {
+    CountingIdlingResource idlingResource = new CountingIdlingResource("loader_call");
+    public CountingIdlingResource getMainActivityIdlingResource() {
+        return idlingResource;
+    }
     Context mContext = this;
     int RECIPELOADER_ID = 100;
     RecipeAdapter recipeAdapter;
@@ -48,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
             } else {
                 Toast.makeText(mContext, R.string.returned_data_is_null, Toast.LENGTH_SHORT).show();
             }
+            idlingResource.decrement();
         }
 
         @Override
@@ -74,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         if (!isOnline()) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_LONG).show();
         } else {
+            idlingResource.increment();
             getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
         }
 
