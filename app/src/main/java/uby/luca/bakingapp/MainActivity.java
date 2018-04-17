@@ -26,8 +26,8 @@ import uby.luca.bakingapp.loaders.RecipeAsyncTaskLoader;
 import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
 
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeOnClickHandler {
-    CountingIdlingResource idlingResource = new CountingIdlingResource("loader_call");
-    public CountingIdlingResource getMainActivityIdlingResource() {
+    static CountingIdlingResource  idlingResource = new CountingIdlingResource("loader_call");
+    public static CountingIdlingResource getMainActivityIdlingResource() {
         return idlingResource;
     }
     Context mContext = this;
@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
             } else {
                 Toast.makeText(mContext, R.string.returned_data_is_null, Toast.LENGTH_SHORT).show();
             }
-            idlingResource.decrement();
         }
 
         @Override
@@ -80,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         if (!isOnline()) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_LONG).show();
         } else {
-            idlingResource.increment();
+
+
             getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
         }
 

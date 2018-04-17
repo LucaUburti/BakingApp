@@ -2,6 +2,7 @@ package uby.luca.bakingapp;
 
 
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.test.filters.LargeTest;
@@ -31,7 +32,7 @@ public class MainActivityRvTest {
     @Before
     public void registerIdlingResource() {
         CountingIdlingResource mIdlingResource = mActivityRule.getActivity().getMainActivityIdlingResource();
-        Espresso.registerIdlingResources(mIdlingResource);
+        IdlingRegistry.getInstance().register(mIdlingResource);
     }
 
     @Test
