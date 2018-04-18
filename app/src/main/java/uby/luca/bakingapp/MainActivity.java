@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
             } else {
                 Toast.makeText(mContext, R.string.returned_data_is_null, Toast.LENGTH_SHORT).show();
             }
+            Log.d("CountingIdlingResource", "onLoadFinished: decrementing...");
+            idlingResource.decrement();
         }
 
         @Override

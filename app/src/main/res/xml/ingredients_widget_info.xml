@@ -2,7 +2,7 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialKeyguardLayout="@layout/ingredients_widget"
     android:initialLayout="@layout/ingredients_widget"
-    android:minHeight="100dp"
+    android:minHeight="150dp"
     android:minWidth="200dp"
     android:previewImage="@drawable/food_stock_bg"
     android:resizeMode="horizontal|vertical"

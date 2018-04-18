@@ -31,7 +31,7 @@
         android:contentDescription="@string/no_favourite_recipe_yet"
         android:text="@string/no_favourite_recipe_yet"
         android:textColor="#ffffff"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:layout_gravity="center_vertical|center_horizontal"/>
 
 </LinearLayout>

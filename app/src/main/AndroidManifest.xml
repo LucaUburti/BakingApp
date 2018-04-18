@@ -14,7 +14,7 @@
 
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +28,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".StepDetails"/>
+        <activity android:name=".StepDetails"
+            android:parentActivityName=".RecipeDetails">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".RecipeDetails" />
+        </activity>
 
         <receiver android:name=".widget.IngredientsWidget">
             <intent-filter>
