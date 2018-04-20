@@ -17,7 +17,7 @@ import uby.luca.bakingapp.NetworkUtils;
 import uby.luca.bakingapp.data.Recipe;
 
 public class RecipeAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Recipe>> {
-    private CountingIdlingResource idlingResource = MainActivity.getMainActivityIdlingResource();
+    //private CountingIdlingResource idlingResource = MainActivity.getMainActivityIdlingResource();
     private ArrayList<Recipe> cachedData;
 
     public RecipeAsyncTaskLoader(Context context) {
@@ -26,8 +26,6 @@ public class RecipeAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Recipe>> {
 
     @Override
     public ArrayList<Recipe> loadInBackground() {
-        Log.d("CountingIdlingResource", "loadInBackground: incrementing...");
-        idlingResource.increment();
 
         URL url = NetworkUtils.buildRecipeURL(NetworkUtils.recipeURL);
         String jsonResults = null;
@@ -51,11 +49,13 @@ public class RecipeAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Recipe>> {
 
     @Override
     protected void onStartLoading() {
-        if (cachedData != null) {
-            deliverResult(cachedData);
-        } else {
+
+
+//        if (cachedData != null) {
+//            deliverResult(cachedData);
+//        } else {
             forceLoad();
-        }
+       // }
     }
 
     @Override

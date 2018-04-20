@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,10 +26,12 @@ import uby.luca.bakingapp.loaders.RecipeAsyncTaskLoader;
 import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
 
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeOnClickHandler {
-    static CountingIdlingResource  idlingResource = new CountingIdlingResource("loader_call");
-    public static CountingIdlingResource getMainActivityIdlingResource() {
+    CountingIdlingResource idlingResource = new CountingIdlingResource("loader_call");
+
+    public CountingIdlingResource getMainActivityIdlingResource() {
         return idlingResource;
     }
+
     Context mContext = this;
     int RECIPELOADER_ID = 100;
     RecipeAdapter recipeAdapter;
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        Log.d("MainActivity", "Running on tablet? "+getResources().getBoolean(R.bool.isTablet));
+        Log.d("MainActivity", "Running on tablet? " + getResources().getBoolean(R.bool.isTablet));
 
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mainRv.setLayoutManager(new GridLayoutManager(this, 1));
@@ -80,14 +82,19 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
         if (!isOnline()) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_LONG).show();
-        } else {
-
-
-            getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
         }
+
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.d("CountingIdlingResource", "loadInBackground: incrementing...");
+        idlingResource.increment();
+        getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
+    }
 
     private boolean isOnline() {        // from Stack Overflow: https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
         ConnectivityManager cm =
@@ -102,8 +109,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     @Override
     public void recipeOnClickImplementation(Recipe clickedRecipe) {
         //Toast.makeText(this, clickedRecipe.getName() + " " + clickedRecipe.getServings(), Toast.LENGTH_SHORT).show();
-        Intent intent=new Intent(this, RecipeDetails.class);
-        Bundle bundle=new Bundle();
+        Intent intent = new Intent(this, RecipeDetails.class);
+        Bundle bundle = new Bundle();
         bundle.putParcelable(PARCELED_RECIPE, clickedRecipe);
         intent.putExtras(bundle);
         startActivity(intent);
