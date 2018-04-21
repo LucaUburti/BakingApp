@@ -6,7 +6,10 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.test.espresso.idling.CountingIdlingResource;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -26,9 +29,15 @@ import uby.luca.bakingapp.loaders.RecipeAsyncTaskLoader;
 import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
 
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeOnClickHandler {
-    CountingIdlingResource idlingResource = new CountingIdlingResource("loader_call");
+    @Nullable
+    private SimpleIdlingResource idlingResource;
 
-    public CountingIdlingResource getMainActivityIdlingResource() {
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new SimpleIdlingResource();
+        }
         return idlingResource;
     }
 
@@ -51,12 +60,13 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
             if (data != null) {
                 recipeAdapter.add(data);
                 mainRv.setAdapter(recipeAdapter);
-                Log.d("MainActivity", "recipeAdapter finished loading");
+                Log.d("LoaderCallbacks", "onLoadFinished: recipeAdapter finished loading");
             } else {
                 Toast.makeText(mContext, R.string.returned_data_is_null, Toast.LENGTH_SHORT).show();
             }
-            Log.d("CountingIdlingResource", "onLoadFinished: decrementing...");
-            idlingResource.decrement();
+            if (idlingResource != null) {
+                idlingResource.setIdleState(true);
+            }
         }
 
         @Override
@@ -82,18 +92,12 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
         if (!isOnline()) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_LONG).show();
+        } else {
+            if (idlingResource != null) {
+                idlingResource.setIdleState(false);
+            }
+            getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
         }
-
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        Log.d("CountingIdlingResource", "loadInBackground: incrementing...");
-        idlingResource.increment();
-        getSupportLoaderManager().initLoader(RECIPELOADER_ID, null, recipeLoader);
     }
 
     private boolean isOnline() {        // from Stack Overflow: https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out

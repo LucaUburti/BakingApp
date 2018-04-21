@@ -45,7 +45,7 @@ public class StepDetailsFragment extends Fragment {
     TextView prevTv;
     @BindView(R.id.step_detail_next_tv)
     TextView nextTv;
-    @BindView(R.id.exoPlayer)
+    @BindView(R.id.exo_player)
     PlayerView simpleExoPlayerView;
     @BindView(R.id.step_navbar_rl)
     RelativeLayout stepNavbarRl;

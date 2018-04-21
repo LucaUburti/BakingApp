@@ -17,7 +17,7 @@ import uby.luca.bakingapp.NetworkUtils;
 import uby.luca.bakingapp.data.Recipe;
 
 public class RecipeAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Recipe>> {
-    //private CountingIdlingResource idlingResource = MainActivity.getMainActivityIdlingResource();
+
     private ArrayList<Recipe> cachedData;
 
     public RecipeAsyncTaskLoader(Context context) {
@@ -26,7 +26,6 @@ public class RecipeAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Recipe>> {
 
     @Override
     public ArrayList<Recipe> loadInBackground() {
-
         URL url = NetworkUtils.buildRecipeURL(NetworkUtils.recipeURL);
         String jsonResults = null;
         try {
@@ -43,19 +42,19 @@ public class RecipeAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Recipe>> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return recipeList;
     }
 
     @Override
     protected void onStartLoading() {
+        if (cachedData != null) {
+            Log.d("RecipeAsyncTaskLoader", "onStartLoading: using cached data");
+            deliverResult(cachedData);
+        } else {
+            Log.d("RecipeAsyncTaskLoader", "onStartLoading: no cached data available, start loading...");
 
-
-//        if (cachedData != null) {
-//            deliverResult(cachedData);
-//        } else {
             forceLoad();
-       // }
+        }
     }
 
     @Override
