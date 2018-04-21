@@ -14,7 +14,7 @@ import uby.luca.bakingapp.data.Recipe;
 import static uby.luca.bakingapp.adapters.RecipeAdapter.PARCELED_RECIPE;
 
 public class UpdateWidgetService extends IntentService {
-    Recipe recipe = null;
+    private Recipe recipe = null;
     public static final String ACTION_UPDATE_INGREDIENTS = "action_widget_update_ingredients";
 
     public UpdateWidgetService() {

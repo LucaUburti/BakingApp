@@ -1,7 +1,6 @@
 package uby.luca.bakingapp;
 
 import android.net.Uri;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,7 +78,7 @@ public class NetworkUtils {
         return recipesList;
     }
 
-    public static ArrayList<Ingredient> parseIngredients(JSONArray jsonIngredients) throws JSONException {
+    private static ArrayList<Ingredient> parseIngredients(JSONArray jsonIngredients) throws JSONException {
         ArrayList<Ingredient> ingredientsList = new ArrayList<>();
 
         for (int i = 0; i < jsonIngredients.length(); i++) {
@@ -94,7 +93,7 @@ public class NetworkUtils {
         return ingredientsList;
     }
 
-    public static ArrayList<Step> parseSteps(JSONArray jsonSteps) throws JSONException {
+    private static ArrayList<Step> parseSteps(JSONArray jsonSteps) throws JSONException {
         ArrayList<Step> stepsList = new ArrayList<>();
 
         for (int i = 0; i < jsonSteps.length(); i++) {

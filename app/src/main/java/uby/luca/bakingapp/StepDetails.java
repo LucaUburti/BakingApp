@@ -22,7 +22,6 @@ import static uby.luca.bakingapp.adapters.StepsAdapter.PARCELED_STEP;
 import static uby.luca.bakingapp.adapters.StepsAdapter.STEP_POSITION;
 
 public class StepDetails extends AppCompatActivity implements StepDetailsFragment.OnStepNavbarClickListener {
-    private Step step;
     private Recipe recipe;
 
 
@@ -41,7 +40,7 @@ public class StepDetails extends AppCompatActivity implements StepDetailsFragmen
         if (bundle != null) {
             recipe = bundle.getParcelable(PARCELED_RECIPE); //passed the whole recipe to be able to easily navigate to next/previous steps
             final int clickedStepPosition = bundle.getInt(STEP_POSITION);
-            step = recipe.getSteps().get(clickedStepPosition);
+            Step step = recipe.getSteps().get(clickedStepPosition);
 
 
             if (savedInstanceState == null) {  //don't recreate fragments after rotation

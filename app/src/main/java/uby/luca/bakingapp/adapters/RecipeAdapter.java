@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -21,7 +20,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
 
     private ArrayList<Recipe> recipeList = new ArrayList<>();
     private Context mContext;
-    RecipeOnClickHandler recipeOnClickHandler;
+    private RecipeOnClickHandler recipeOnClickHandler;
 
     public RecipeAdapter(Context context, RecipeOnClickHandler recipeOnClickHandler) {
         this.mContext = context;
@@ -74,7 +73,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
         TextView recipeTv;
         ImageView recipeIv;
 
-        public RecipeHolder(View recipeView) {
+        RecipeHolder(View recipeView) {
             super(recipeView);
             recipeTv = recipeView.findViewById(R.id.recipe_tv);
             recipeIv = recipeView.findViewById(R.id.recipe_iv);

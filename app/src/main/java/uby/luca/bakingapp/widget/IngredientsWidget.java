@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -40,9 +39,7 @@ public class IngredientsWidget extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredients_widget);
 
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pi = setupPendingIntent(context);
 
         views.setTextViewText(R.id.recipe_widget_tv, widgetRecipeText);
         views.setTextViewText(R.id.ingredients_widget_tv, widgetIngredientsText);
@@ -52,7 +49,8 @@ public class IngredientsWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, String recipeName, String formattedIngredients) {
+
+    private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, String recipeName, String formattedIngredients) {
         //called on periodic updates, data is coming from shared prefs
 
         if (recipeName.equals("")) {
@@ -62,12 +60,7 @@ public class IngredientsWidget extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredients_widget);
 
-        Intent intent = new Intent(context, MainActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntentWithParentStack(intent);
-        PendingIntent pi = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        //PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pi = setupPendingIntent(context);
 
         views.setTextViewText(R.id.recipe_widget_tv, recipeName);
         views.setTextViewText(R.id.ingredients_widget_tv, formattedIngredients);
@@ -77,6 +70,11 @@ public class IngredientsWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
+    private static PendingIntent setupPendingIntent(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

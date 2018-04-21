@@ -41,9 +41,10 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         return idlingResource;
     }
 
-    Context mContext = this;
-    int RECIPELOADER_ID = 100;
-    RecipeAdapter recipeAdapter;
+    private final Context mContext = this;
+    private final int RECIPELOADER_ID = 100;
+    private RecipeAdapter recipeAdapter;
+
     @BindView(R.id.main_rv)
     RecyclerView mainRv;
 
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         }
 
         @Override
-        public void onLoadFinished(Loader<ArrayList<Recipe>> loader, ArrayList<Recipe> data) {
+        public void onLoadFinished(@NonNull Loader<ArrayList<Recipe>> loader, ArrayList<Recipe> data) {
             //add to adapter and then set it to the corresponding RecyclerView
             if (data != null) {
                 recipeAdapter.add(data);
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         }
 
         @Override
-        public void onLoaderReset(Loader<ArrayList<Recipe>> loader) {
+        public void onLoaderReset(@NonNull Loader<ArrayList<Recipe>> loader) {
 
         }
     };

@@ -1,102 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
-
-
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_gravity="center_horizontal"
-    android:gravity="center_horizontal"
-    android:padding="8dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
 
-    <FrameLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:focusableInTouchMode="true">
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/recipedetails_recipe_iv"
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/food_stock_bg" />
+            android:focusableInTouchMode="true"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/recipedetails_recipe_iv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/recipe_name"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/food_stock_bg" />
 
 
-        <LinearLayout
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/recipedetails_recipe_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:padding="8dp"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    tools:text="Recipe Name" />
+
+                <TextView
+                    android:id="@+id/recipedetails_servings_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="16sp"
+                    tools:text="Servings: 8" />
+            </LinearLayout>
+
+
+        </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/ingredients_list_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:padding="8dp"
+            android:text="@string/ingredients_list"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/recipedetails_recipe_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:padding="8dp"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                tools:text="Recipe Name" />
+        <TextView
+            android:id="@+id/recipedetails_ingredients_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="16sp"
+            tools:text="unsalted butter, 6 TBLSP\n..." />
 
-            <TextView
-                android:id="@+id/recipedetails_servings_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="16sp"
-                tools:text="Servings: 8" />
-        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/steps"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-
-    </FrameLayout>
-
-
-
-    <TextView
-        android:id="@+id/ingredients_list_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="@string/ingredients_list"
-        android:textColor="@color/colorSecondaryText"
-        android:textStyle="bold"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/recipedetails_ingredients_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textColor="@color/colorSecondaryText"
-        android:textSize="16sp"
-        tools:text="unsalted butter, 6 TBLSP\n..." />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="@string/steps"
-        android:textColor="@color/colorSecondaryText"
-        android:textStyle="bold"
-        android:textSize="24sp" />
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recipedetails_steps_rv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recipedetails_steps_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp" />
 
 
-</LinearLayout>
+    </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

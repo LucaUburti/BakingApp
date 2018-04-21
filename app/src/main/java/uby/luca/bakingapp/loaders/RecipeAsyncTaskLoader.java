@@ -2,7 +2,6 @@ package uby.luca.bakingapp.loaders;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import uby.luca.bakingapp.MainActivity;
 import uby.luca.bakingapp.NetworkUtils;
 import uby.luca.bakingapp.data.Recipe;
 

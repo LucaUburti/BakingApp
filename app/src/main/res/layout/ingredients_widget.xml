@@ -4,34 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#09C"
-    android:padding="@dimen/widget_margin"
+    android:gravity="center_vertical|center_horizontal"
     android:orientation="vertical"
-    android:gravity="center_vertical|center_horizontal">
+    android:padding="@dimen/widget_margin">
 
     <TextView
         android:id="@+id/recipe_widget_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Recipe Name"
+        android:layout_gravity="center_vertical|center_horizontal"
         android:layout_margin="8dp"
-        android:background="#09C"
         android:contentDescription="@string/no_favourite_recipe_yet"
         android:text=""
         android:textColor="#ffffff"
-        android:textSize="24sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_gravity="center_vertical|center_horizontal"/>
+        tools:text="Recipe Name" />
+
     <TextView
         android:id="@+id/ingredients_widget_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_gravity="center_vertical|center_horizontal"
         android:layout_margin="8dp"
-        android:background="#09C"
         android:contentDescription="@string/no_favourite_recipe_yet"
         android:text="@string/no_favourite_recipe_yet"
         android:textColor="#ffffff"
-        android:textSize="18sp"
-        android:layout_gravity="center_vertical|center_horizontal"/>
+        android:textSize="16sp" />
 
 </LinearLayout>

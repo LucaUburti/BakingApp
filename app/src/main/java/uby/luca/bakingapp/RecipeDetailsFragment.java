@@ -36,8 +36,7 @@ public class RecipeDetailsFragment extends Fragment {
     @BindView(R.id.recipedetails_recipe_iv)
     ImageView recipeIv;
 
-    Context mContext = getActivity();
-    private StepsAdapter stepsAdapter;
+    private final Context mContext = getActivity();
 
 //    OnStepClickListener onStepClickListener;
 //    public interface OnStepClickListener {
@@ -86,7 +85,7 @@ public class RecipeDetailsFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         stepsRv.setLayoutManager(layoutManager);
         //stepsRv.setNestedScrollingEnabled(true);
-        stepsAdapter = new StepsAdapter(recipe.getSteps(), stepOnClickHandler);
+        StepsAdapter stepsAdapter = new StepsAdapter(recipe.getSteps(), stepOnClickHandler);
         stepsRv.setAdapter(stepsAdapter);
 
 

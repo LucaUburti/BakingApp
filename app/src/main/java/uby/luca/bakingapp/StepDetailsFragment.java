@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -18,9 +19,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -51,7 +52,7 @@ public class StepDetailsFragment extends Fragment {
     RelativeLayout stepNavbarRl;
 
     SimpleExoPlayer simpleExoPlayer;
-    String PLAYER_POSITION = "playerPosition";
+    final String PLAYER_POSITION = "playerPosition";
 
     OnStepNavbarClickListener onStepNavbarClickListener;
 
@@ -74,15 +75,19 @@ public class StepDetailsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
 
         ButterKnife.bind(this, rootView);
 
-        final Recipe recipe = getArguments().getParcelable(PARCELED_RECIPE);
+        Recipe recipe = null;
+        if (getArguments() != null) {
+            recipe = getArguments().getParcelable(PARCELED_RECIPE);
+        }
         final int clickedStepPosition = getArguments().getInt(STEP_POSITION);
+
         final Step step;
-        if (recipe != null) {
+        if (recipe != null && clickedStepPosition >= 0) {
             boolean isLandscape = this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
             boolean isTablet = getResources().getBoolean(R.bool.isTablet);
             String videoURL = recipe.getSteps().get(clickedStepPosition).getVideoURL();
@@ -93,11 +98,13 @@ public class StepDetailsFragment extends Fragment {
             setupCorrectLayout(isLandscape, isTablet, !videoURL.isEmpty()); // make player fullscreen if in landscape, on a phone, and has a video
 
             if (!videoURL.isEmpty()) { //we can init the player
-                simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), new DefaultTrackSelector(), new DefaultLoadControl());
+                DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(getActivity());
+                simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, new DefaultTrackSelector(), new DefaultLoadControl());
                 simpleExoPlayerView.setPlayer(simpleExoPlayer);
                 Uri videoUri = Uri.parse(videoURL);
                 String userAgent = Util.getUserAgent(getActivity(), "BackingApp");
-                MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
+                //MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
+                MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultDataSourceFactory(getActivity(), userAgent)).createMediaSource(videoUri);
                 simpleExoPlayer.prepare(mediaSource);
                 simpleExoPlayer.setPlayWhenReady(true);
                 if (savedInstanceState != null) {
@@ -123,7 +130,7 @@ public class StepDetailsFragment extends Fragment {
                     }
                 });
             }
-            if (clickedStepPosition == recipe.getSteps().size() - 1) { //last step
+            if (clickedStepPosition == (recipe.getSteps().size() - 1)) { //last step
                 nextTv.setVisibility(View.GONE);
             } else {
                 nextTv.setVisibility(View.VISIBLE);
@@ -147,7 +154,8 @@ public class StepDetailsFragment extends Fragment {
             simpleExoPlayerView.setVisibility(View.VISIBLE);
 
             if (isLandscape && !isTablet) { //landscape on a phone
-                stepDetailsShortdescTv.setVisibility(View.GONE);  //hide unnecessary view
+                //hide unnecessary view
+                stepDetailsShortdescTv.setVisibility(View.GONE);
                 stepDetailsDescTv.setVisibility(View.GONE);
                 ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
                 if (ab != null) {

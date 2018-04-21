@@ -8,19 +8,20 @@
         android:id="@+id/recipe_iv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:src="@drawable/food_stock_bg"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/recipe_name"
         android:scaleType="centerCrop"
-        android:adjustViewBounds="true"/>
+        tools:src="@drawable/food_stock_bg" />
 
     <TextView
         android:id="@+id/recipe_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:padding="8dp"
         android:textColor="@color/colorPrimaryText"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:padding="8dp"
         tools:text="Recipe Name" />
 
 

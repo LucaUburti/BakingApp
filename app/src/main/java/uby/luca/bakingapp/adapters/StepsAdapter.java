@@ -1,8 +1,8 @@
 package uby.luca.bakingapp.adapters;
 
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +13,13 @@ import java.util.ArrayList;
 import uby.luca.bakingapp.R;
 import uby.luca.bakingapp.data.Step;
 
-import static android.content.ContentValues.TAG;
-
 public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsHolder> {
     private ArrayList<Step> stepsList;
     public static final String PARCELED_STEP = "parceledStep";
     public static final String STEP_POSITION = "stepPosition";
 
 
-    StepOnClickHandler stepOnClickHandler;
+    private StepOnClickHandler stepOnClickHandler;
 
     public interface StepOnClickHandler {
         void stepOnClickImplementation(int clickedStepPosition);
@@ -34,6 +32,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsHolder>
     }
 
 
+    @NonNull
     @Override
     public StepsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View stepsView= LayoutInflater.from(parent.getContext()).inflate(R.layout.steps_item, parent, false);
