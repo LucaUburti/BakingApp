@@ -11,9 +11,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,6 +31,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,9 +54,17 @@ public class StepDetailsFragment extends Fragment {
     PlayerView simpleExoPlayerView;
     @BindView(R.id.step_navbar_rl)
     RelativeLayout stepNavbarRl;
+    @BindView(R.id.thumbnail_iv)
+    ImageView thumbIv;
 
     SimpleExoPlayer simpleExoPlayer;
     final String PLAYER_POSITION = "playerPosition";
+    final String PLAYER_PLAYING = "playerPlaying";
+
+
+    int clickedStepPosition;
+    boolean isPlaying;
+    long playerPosition;
 
     OnStepNavbarClickListener onStepNavbarClickListener;
 
@@ -79,38 +91,53 @@ public class StepDetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
 
         ButterKnife.bind(this, rootView);
-
         Recipe recipe = null;
+
         if (getArguments() != null) {
             recipe = getArguments().getParcelable(PARCELED_RECIPE);
         }
-        final int clickedStepPosition = getArguments().getInt(STEP_POSITION);
+        clickedStepPosition = getArguments().getInt(STEP_POSITION);
 
         final Step step;
         if (recipe != null && clickedStepPosition >= 0) {
             boolean isLandscape = this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
             boolean isTablet = getResources().getBoolean(R.bool.isTablet);
             String videoURL = recipe.getSteps().get(clickedStepPosition).getVideoURL();
-            if (videoURL.isEmpty()) { //try the thumbnail URL
-                videoURL = recipe.getSteps().get(clickedStepPosition).getThumbnailURL();
+//            if (videoURL.isEmpty()) { //try the thumbnail URL
+//                videoURL = recipe.getSteps().get(clickedStepPosition).getThumbnailURL();
+//            }
+
+
+            String thumbnailURL = recipe.getSteps().get(clickedStepPosition).getThumbnailURL();
+            if (!TextUtils.isEmpty(thumbnailURL)) {
+                Picasso.with(getContext())
+                        .load(thumbnailURL)
+                        .into(thumbIv, new com.squareup.picasso.Callback() {
+                            @Override
+                            public void onSuccess() {
+                                thumbIv.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onError() {
+                                thumbIv.setVisibility(View.GONE);
+                            }
+                        });
             }
 
-            setupCorrectLayout(isLandscape, isTablet, !videoURL.isEmpty()); // make player fullscreen if in landscape, on a phone, and has a video
 
-            if (!videoURL.isEmpty()) { //we can init the player
-                DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(getActivity());
-                simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, new DefaultTrackSelector(), new DefaultLoadControl());
-                simpleExoPlayerView.setPlayer(simpleExoPlayer);
-                Uri videoUri = Uri.parse(videoURL);
-                String userAgent = Util.getUserAgent(getActivity(), "BackingApp");
-                //MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
-                MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultDataSourceFactory(getActivity(), userAgent)).createMediaSource(videoUri);
-                simpleExoPlayer.prepare(mediaSource);
-                simpleExoPlayer.setPlayWhenReady(true);
-                if (savedInstanceState != null) {
-                    long playerPosition = savedInstanceState.getLong(PLAYER_POSITION, simpleExoPlayer.getCurrentPosition());
-                    simpleExoPlayer.seekTo(playerPosition);
+            setupCorrectLayout(isLandscape, isTablet, !TextUtils.isEmpty(videoURL)); // make player fullscreen if in landscape, on a phone, and has a video
+
+            if (!TextUtils.isEmpty(videoURL)) { //we can init the player
+                if (savedInstanceState != null) { //on rotations, restore player state and player position
+                    isPlaying = savedInstanceState.getBoolean(PLAYER_PLAYING, true);
+                    playerPosition = savedInstanceState.getLong(PLAYER_POSITION, 0);
+                } else {  //set default player state values
+                    isPlaying=true;
+                    playerPosition=0;
                 }
+
+                initPlayer();
             }
 
 
@@ -144,6 +171,33 @@ public class StepDetailsFragment extends Fragment {
 
         }
         return rootView;
+    }
+
+    private void initPlayer() {
+        if (simpleExoPlayer != null) {
+            return;           //player already set, skip init
+        }
+        Recipe recipe = null;
+        if (getArguments() != null) {
+            recipe = getArguments().getParcelable(PARCELED_RECIPE);
+        }
+        String videoURL = recipe.getSteps().get(clickedStepPosition).getVideoURL();
+        if(TextUtils.isEmpty(videoURL)){
+            return;            //nothing to display
+        }
+        DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(getActivity());
+        simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, new DefaultTrackSelector(), new DefaultLoadControl());
+        simpleExoPlayerView.setPlayer(simpleExoPlayer);
+        Uri videoUri = Uri.parse(videoURL);
+        String userAgent = Util.getUserAgent(getActivity(), "BackingApp");
+        //MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
+        MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultDataSourceFactory(getActivity(), userAgent)).createMediaSource(videoUri);
+        simpleExoPlayer.prepare(mediaSource);
+
+        //These are stored in onSaveInstanceState (on rotation) or in onPause (if put in background). On first run isPlaying=true and position=0
+        simpleExoPlayer.setPlayWhenReady(isPlaying);
+        simpleExoPlayer.seekTo(playerPosition);
+
     }
 
     private void setupCorrectLayout(boolean isLandscape, boolean isTablet, boolean hasVideo) {
@@ -191,21 +245,32 @@ public class StepDetailsFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        initPlayer();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         if (simpleExoPlayer != null) {
+            //store the player state, in case we are just being put in background and need to restore these in onResume
+            isPlaying = simpleExoPlayer.getPlayWhenReady();
+            playerPosition = simpleExoPlayer.getCurrentPosition();
+
             simpleExoPlayer.stop();
             simpleExoPlayer.release();
             simpleExoPlayer = null;
         }
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (simpleExoPlayer != null) {
-            long playerPosition = simpleExoPlayer.getCurrentPosition();
+            isPlaying = simpleExoPlayer.getPlayWhenReady();
+            outState.putBoolean(PLAYER_PLAYING, isPlaying);
+            playerPosition = simpleExoPlayer.getCurrentPosition();
             outState.putLong(PLAYER_POSITION, playerPosition);
         }
 

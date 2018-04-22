@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @BindView(R.id.main_rv)
     RecyclerView mainRv;
+    @BindView(R.id.main_activity)
+    ConstraintLayout mainActivity;
 
 
     private LoaderManager.LoaderCallbacks<ArrayList<Recipe>> recipeLoader = new LoaderManager.LoaderCallbacks<ArrayList<Recipe>>() {
@@ -92,7 +96,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         recipeAdapter = new RecipeAdapter(this, this);
 
         if (!isOnline()) {
-            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, R.string.not_connected, Toast.LENGTH_LONG).show();
+            Snackbar.make(mainActivity, R.string.not_connected, Snackbar.LENGTH_LONG).show();
         } else {
             if (idlingResource != null) {
                 idlingResource.setIdleState(false);

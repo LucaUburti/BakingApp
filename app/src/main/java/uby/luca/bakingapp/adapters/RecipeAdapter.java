@@ -2,6 +2,7 @@ package uby.luca.bakingapp.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
         holder.recipeTv.setText(recipe.getName());
 
         holder.recipeIv.setContentDescription(recipe.getName());
-        if (!recipe.getImage().isEmpty()) {
+        if (!TextUtils.isEmpty(recipe.getImage())) {
             Picasso.with(mContext)
                     .load(recipe.getImage())
                     .placeholder(R.drawable.food_stock_bg)

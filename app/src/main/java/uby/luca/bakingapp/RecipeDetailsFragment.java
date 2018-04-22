@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +61,7 @@ public class RecipeDetailsFragment extends Fragment {
         recipeTv.setText(recipe.getName());
         servingsTv.setText(R.string.servings);
         recipeIv.setContentDescription(recipe.getName());
-        if (!recipe.getImage().isEmpty()) {
+        if (!TextUtils.isEmpty(recipe.getImage())) {
             Picasso.with(mContext)
                     .load(recipe.getImage())
                     .placeholder(R.drawable.food_stock_bg)
